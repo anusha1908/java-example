@@ -23,9 +23,9 @@ pipeline {
                   script {
                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
     sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 276775973535.dkr.ecr.ap-south-1.amazonaws.com'
-     sh 'docker push 276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy'
+     sh 'docker push 276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy:latest'
 }
-
+}
 }
 
             stage('Docker Run') {
