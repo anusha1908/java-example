@@ -1,46 +1,34 @@
 pipeline {
     agent any
-     environment {
+    
+    environment {
         registry = '276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy'
     }
-   
+
     stages {
-          stage('Checkout') {
+        stage('Checkout from Github') {
             steps {
-                git branch: 'main', url: 'https://github.com/anusha1908/java-example.git'
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], userRemoteConfigs: [[url: 'https://github.com/anusha1908/java-example.git']]])
             }
         }
-           stage('Building image') {
-             steps{
-                  script {
-                   dockerImage = docker.build registry
-                   }
-      }
-           }
-    
-            stage('Pushing to ECR') {
-             steps{  
-                  script {
-               withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 276775973535.dkr.ecr.ap-south-1.amazonaws.com'
-     sh 'docker push 276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy:latest'
+
+        stage('Docker Build') {
+            steps {
+                script {
+                    dockerImage = docker.build registry
+                }
+            }
+        }    
+
+        stage('Docker Push') {
+            steps {
+                script {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws']]) {
+                        sh 'aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 276775973535.dkr.ecr.ap-south-1.amazonaws.com'
+                        sh 'docker push 276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy:latest'
+                    }
+                }
+            }
+        }
+    }
 }
-}
-}
-
-            stage('Docker Run') {
-              steps{
-                   script {
-                sh 'docker run -d -p 8080:8080 --rm --name myContainer 276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy:latest'     
-      }
-    }
-        }
-    }
-
-
-
-
-
-
-
-  
