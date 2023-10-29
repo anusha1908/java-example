@@ -1,7 +1,7 @@
 pipeline {
     agent any
      environment {
-        registry = "276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy"
+        registry = '276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy'
     }
    
     stages {
@@ -36,4 +36,11 @@ pipeline {
     }
         }
     }
+
+
+
+
+
+
+
   
