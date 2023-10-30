@@ -29,6 +29,14 @@ pipeline {
                     }
                 }
             }
-        }
+       
+        Stage('deploy') {
+            steps {
+                script {
+                        sh 'docker run -d -p 8080:8080 --rm --name mypythonContainer 276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy:latest' 
+                    }
+            }
     }
+        
+ }   
 }
