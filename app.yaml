@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-app-container
+          image: 224498103667.dkr.ecr.ap-south-1.amazonaws.com/ci-cd:latest
+          ports:
+            - containerPort: 8080  # The port your application listens on inside the container
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 9000  # The port you want to expose on the Kubernetes cluster
+      targetPort: 8080  # The port your application listens on inside the container
