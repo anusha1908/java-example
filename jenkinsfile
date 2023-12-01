@@ -44,20 +44,17 @@ pipeline {
         }
         stage('Deploying to Kubernetes') {
               steps{
-					sshagent(['k8s']) {
-					    sh "scp -o strictHostKeyChecking=no app.yaml ubuntu@13.235.50.25:/home/ubuntu"
-					     script {
-						   try{
-							sh "ssh ubuntu@13.235.50.25 kubectl apply -f ."
-						}catch(error){
-							sh "ssh ubuntu@13.235.50.25 kubectl create -f ."
-						   }
+					  withKubeConfig([credentialsId: 'kuber', serverUrl: 'https://172.31.33.161:6443']) {
+                        
+                        sh "kubectl apply -f app.yaml -n dev"
+                       
+						}
     
-                        }
-					
-					
                     }
-                }
-            }
+					
+					
+         }           
+                
+            
     }
   }
