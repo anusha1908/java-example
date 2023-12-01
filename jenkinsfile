@@ -1,7 +1,7 @@
 pipeline {
     agent any
      environment {
-        registry = '276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy'
+        registry = '224498103667.dkr.ecr.ap-south-1.amazonaws.com/ci-cd'
     }
    
     stages {
@@ -22,8 +22,8 @@ pipeline {
              steps{  
                   script {
                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws']]) {
-                        sh 'aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 276775973535.dkr.ecr.ap-south-1.amazonaws.com'
-                        sh 'docker push 276775973535.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy:latest'
+                        sh 'aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 224498103667.dkr.ecr.ap-south-1.amazonaws.com'
+                        sh 'docker push 224498103667.dkr.ecr.ap-south-1.amazonaws.com/ci-cd:latest'
 }
 
 }
@@ -41,5 +41,22 @@ pipeline {
       }
     }
         }
+        stage('Deploying to Kubernetes') {
+              steps{
+					sshagent(['k8s']) {
+					    sh "scp -o stringHostKeyChecking=no app.yaml ubuntu@13.235.50.25:/home/ubuntu"
+					     script {
+						   try{
+							sh "ssh ubuntu@13.235.50.25 kubectl apply -f ."
+						}catch(error){
+							sh "ssh ubuntu@13.235.50.25 kubectl create -f ."
+						   }
+    
+                        }
+					
+					
+                    }
+                }
+            }
     }
   }
