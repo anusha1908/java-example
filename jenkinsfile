@@ -37,7 +37,7 @@ pipeline {
             stage('Docker Run') {
               steps{
                    script {
-                sh 'docker run -d -p 8081:8080 --rm --name Container1 224498103667.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy:latest
+                sh 'docker run -d -p 8081:8080 --rm --name Container1 224498103667.dkr.ecr.ap-south-1.amazonaws.com/docker-image-deploy:latest'
      
       }
     }
